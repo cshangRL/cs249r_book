@@ -133,24 +133,47 @@ with open('datasets/tinytalks/splits/train.txt', 'r') as f:
 
 ### Training a Transformer
 
-```python
-# See milestones/05_2017_transformer/tinybot_demo.py for full example
-from tinytorch.models.transformer import GPT
-from tinytorch.text.tokenization import CharTokenizer
 
-# Initialize model
-tokenizer = CharTokenizer()
-tokenizer.fit(train_text)
+  from tinytorch.models.transformer import GPT
+  from tinytorch.text.tokenization import CharTokenizer
+  from tinytorch.core.optimizers import Adam
+  from tinytorch.core.losses import CrossEntropyLoss
+  
+  # Load dataset
+  with open('datasets/tinytalks/splits/train.txt', 'r') as f:
+      train_text = f.read()
+  
+  # Initialize tokenizer
+  tokenizer = CharTokenizer()
+  tokenizer.fit(train_text)
+  
+  # Initialize model
+  model = GPT(
+      vocab_size=len(tokenizer),
+      embed_dim=128,
+      num_layers=4,
+      num_heads=4,
+      max_seq_len=64
+  )
+  
+  # Initialize optimizer and loss
+  optimizer = Adam(model.parameters(), lr=0.001)
+  criterion = CrossEntropyLoss()
+  
+  # Training loop (simplified)
+  for epoch in range(10):
+      # ... create batches from train_text ...
+      # ... forward pass ...
+      # ... compute loss ...
+      # ... backward pass ...
+      # ... optimizer step ...
+      print(f"Epoch {epoch+1}, Loss: {loss}")
+  
+  # Generate text
+  prompt = "Q: What is your name?"
+  response = model.generate(prompt, tokenizer)
+  print(response)
 
-model = GPT(
-    vocab_size=len(tokenizer),
-    embed_dim=128,
-    num_layers=4,
-    num_heads=4,
-    max_seq_len=64
-)
-
-# Train for 5 minutes → See meaningful results!
 ```
 
 ### Expected Performance
